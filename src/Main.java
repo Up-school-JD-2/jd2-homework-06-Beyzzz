@@ -17,6 +17,10 @@ public class Main {
     manager.addProduct(new Product("3", "Product 3", 0, 19.99, "Category 1", ProductStatus.OUT_OF_STOCK));
     manager.addProduct(new Product("4", "Product 4", 3, 24.99, "Category 2", ProductStatus.DISCONTINUED));
 
+    System.out.println("Grouping: ");
+    manager.getCategoryPriceSum().forEach((k, v) -> System.out.println(k + " " + v));
+    System.out.println("--------");
+
     // ORD-122
     manager.registerOrderNumberSupplier("supplier-1", () -> {
       int orderNumber = random.nextInt(1000);

@@ -1,14 +1,13 @@
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.OptionalDouble;
+import jdk.jfr.Category;
+
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 public class ProductManager {
 
@@ -104,22 +103,48 @@ public class ProductManager {
   }
 
   public List<Product> getActiveProductsSortedByPrice() {
+    return products
+            .values()
+            .stream()
+            .filter(product -> product.getProductStatus().equals(ProductStatus.ACTIVE))
+            .sorted(Comparator.comparingDouble(Product::getPrice))
+            .toList();
     // ProductStatus'ü ACTIVE olan ürünleri fiyatlarına göre sıralayıp döndüren metodu yazın
-    return null;
+
   }
 
   public double calculateAveragePriceInCategory(String category) {
+    return products
+            .values()
+            .stream()
+            .filter(product -> product.getCategory().equals(category)) //filtered Stream<Product>
+            .mapToDouble(Product::getPrice)
+            .average()
+            .orElse(0.0);
+
     // String olarak verilen category'e ait olan ürünlerin fiyatlarının ortalamasını yoksa 0.0 döndüren metodu yazın
     // tip: OptionalDouble kullanımını inceleyin.
-    return 0.0;
+
   }
 
   public Map<String, Double> getCategoryPriceSum() {
+
     // category'lere göre gruplayıp, her bir kategoride bulunan ürünlerin toplam fiyatını stream ile hesaplayıp
     // döndüren metodu yazın
     // örn:
     // category-1 105.2
     // category-2 45.0
-    return null;
+    return products
+            .values()
+            .stream()
+            .collect(Collectors.groupingBy(
+                                          Product::getCategory,
+                                          Collectors.summingDouble(product -> product.getStock() * product.getPrice()))
+                                        );
+    //Map<String, Double>
+
+    //kozmetik => şampuan => adedi 5, stoku 2, 5*2 + parfüm => adedi 6, stoku 2, 6*2 => total per kozmetik
+    //temizlik => deterjan => adedi 3, stoku 3, 3*3 + çamaşır suyu => adedi 5, stoku 4, 5*4 => total per temizlik
+
   }
 }
